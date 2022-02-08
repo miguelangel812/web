@@ -1,0 +1,108 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
+
+/*Import que no viene añadido con flutter*/
+import 'package:webview_flutter/webview_flutter.dart';
+
+void main() {
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({Key? key}) : super(key: key);
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      title: 'Navigator',
+      initialRoute: "/busqueda",
+      routes: {
+        "/busqueda": (context) => const busqueda(),
+        "/paginaWeb": (context) => paginaWeb(),
+      },
+    );
+  }
+}
+
+final web = TextEditingController();
+
+class busqueda extends StatelessWidget {
+  const busqueda({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+        appBar: AppBar(
+          title: const Text("Busqueda"),
+          backgroundColor: Colors.black,
+        ),
+        resizeToAvoidBottomInset: false,
+        body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              /*
+              image: NetworkImage(
+                "https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.tuexpertomovil.com%2F2019%2F07%2F04%2F5-webs-para-descargar-fondos-de-pantalla-hd-para-el-movil%2F&psig=AOvVaw28TyBR-ztoO2N1ZJAo74Hq&ust=1644399836426000&source=images&cd=vfe&ved=0CAsQjRxqFwoTCPjgpvbo7_UCFQAAAAAdAAAAABAD",
+              ), */
+              image: AssetImage(
+                "images/fondo1.jpg",
+                //fit: BoxFit.cover,
+              ),
+            ),
+          ),
+          child: Column(
+            children: <Widget>[
+              TextField(
+                controller: web,
+                autofocus: true,
+                textAlign: TextAlign.center,
+                style: TextStyle(color: Colors.white),
+              ),
+              ElevatedButton(
+                onPressed: () {
+                  Navigator.pushNamed(context, "/paginaWeb");
+                },
+                child: const Text("Buscar"),
+              ),
+            ],
+          ),
+        ));
+  }
+}
+
+class paginaWeb extends StatelessWidget {
+  const paginaWeb({Key? key}) : super(key: key);
+
+  @override
+  Widget build(BuildContext context) {
+    bool error = false;
+    late WebViewController _controller;
+
+    return Scaffold(
+      appBar: AppBar(
+        title: const Text("Pagina Web"),
+        backgroundColor: Colors.black,
+      ),
+      backgroundColor: Colors.black,
+      body: Column(children: <Widget>[
+        ElevatedButton(
+          onPressed: () {
+            Navigator.pushNamed(context, "/busqueda");
+          },
+          child: const Text("Atrás"),
+        ),
+        Expanded(
+          child: WebView(
+            onWebResourceError: (WebResourceError webviewerrr) {
+              print("no se ha podido iniciar");
+              web.text = "No existe o no tiene Internet";
+            },
+            initialUrl: "https://www." + web.text + ".com",
+            onWebViewCreated: (WebViewController webViewController) {
+              _controller = webViewController;
+            },
+          ),
+        )
+      ]),
+    );
+  }
+}
